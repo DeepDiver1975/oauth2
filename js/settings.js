@@ -27,4 +27,19 @@ $(document).ready(function () {
 			}
 		}, false);
 	}
+
+	var testToken = Math.random().toString();
+	$.ajax({
+		type: 'POST',
+		url: OC.generateUrl('apps/oauth2/test'),
+		headers: {
+			'Authorization': 'Bearer ' + testToken
+		}
+	}).done(function(data){
+		if (data.authHeaderFound !== true) {
+			OC.Notification.show(
+				'Oauth2 will not work properly as your webserver does not pass the Authorization header to PHP.'
+			);
+		}
+	});
 });

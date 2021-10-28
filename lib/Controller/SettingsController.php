@@ -224,4 +224,15 @@ class SettingsController extends Controller {
 			]
 		);
 	}
+
+	/**
+	 * Checks if the server configured properly
+	 *
+	 * @return bool[]
+	 */
+	public function test() {
+		return [
+			'authHeaderFound' => $this->request->getHeader('Authorization') !== null
+		];
+	}
 }

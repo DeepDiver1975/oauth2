@@ -42,7 +42,7 @@ class SettingsControllerTest extends TestCase {
 	/** @var string $name */
 	private $appName;
 
-	/** @var IRequest */
+	/** @var IRequest | \PHPUnit\Framework\MockObject\MockObject */
 	private $request;
 
 	/** @var SettingsController $controller */
@@ -261,5 +261,23 @@ class SettingsControllerTest extends TestCase {
 		self::assertCount(0, $this->authorizationCodeMapper->findAll());
 		self::assertCount(0, $this->accessTokenMapper->findAll());
 		self::assertCount(0, $this->refreshTokenMapper->findAll());
+	}
+
+	public function healthDataProvider() {
+		return [
+			['someToken', ['authHeaderFound' => true]],
+			[null, ['authHeaderFound' => false]]
+		];
+	}
+
+	/**
+	 * @dataProvider healthDataProvider
+	 * @param string $authHeader
+	 * @param array $expectedResult
+	 */
+	public function testTest($authHeader, $expectedResult) {
+		$this->request->method('getHeader')->willReturn($authHeader);
+		$result = $this->controller->test();
+		$this->assertEquals($result, $expectedResult);
 	}
 }
