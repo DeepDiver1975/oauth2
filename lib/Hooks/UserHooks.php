@@ -23,8 +23,11 @@ use OC\User\Manager;
 use OC\User\User;
 use OCA\OAuth2\Db\AccessTokenMapper;
 use OCA\OAuth2\Db\AuthorizationCodeMapper;
+use OCA\OAuth2\Db\Client;
+use OCA\OAuth2\Db\ClientMapper;
 use OCA\OAuth2\Db\RefreshTokenMapper;
 use OCP\ILogger;
+use OCP\IUserSession;
 
 class UserHooks {
 	/** @var Manager */
@@ -39,11 +42,17 @@ class UserHooks {
 	/** @var RefreshTokenMapper */
 	private $refreshTokenMapper;
 
+	/** @var ClientMapper */
+	private $clientMapper;
+
 	/** @var ILogger */
 	private $logger;
 
 	/** @var string */
 	private $appName;
+
+	/** @var IUserSession */
+	private $userSession;
 
 	/**
 	 * UserHooks constructor.
@@ -52,7 +61,9 @@ class UserHooks {
 	 * @param AuthorizationCodeMapper $authorizationCodeMapper The authorization code mapper.
 	 * @param AccessTokenMapper $accessTokenMapper The access token mapper.
 	 * @param RefreshTokenMapper $refreshTokenMapper The refresh token mapper.
+	 * @param ClientMapper $clientMapper The client mapper.
 	 * @param ILogger $logger The logger.
+	 * @param IUserSession $userSession The user session
 	 * @param string $AppName The app's name.
 	 */
 	public function __construct(
@@ -60,14 +71,18 @@ class UserHooks {
 		AuthorizationCodeMapper $authorizationCodeMapper,
 		AccessTokenMapper $accessTokenMapper,
 		RefreshTokenMapper $refreshTokenMapper,
+		ClientMapper $clientMapper,
 		ILogger $logger,
+		IUserSession $userSession,
 		$AppName
 	) {
 		$this->userManager = $userManager;
 		$this->authorizationCodeMapper = $authorizationCodeMapper;
 		$this->accessTokenMapper = $accessTokenMapper;
 		$this->refreshTokenMapper = $refreshTokenMapper;
+		$this->clientMapper = $clientMapper;
 		$this->logger = $logger;
+		$this->userSession = $userSession;
 		$this->appName = $AppName;
 	}
 
@@ -90,5 +105,17 @@ class UserHooks {
 		};
 		/** @phan-suppress-next-line PhanUndeclaredMethod */
 		$this->userManager->listen('\OC\User', 'preDelete', $callback);
+		$this->userManager->listen('\OC\User', 'preLogout', function () {
+			$user = $this->userSession->getUser();
+			$clientsWithInvalidate = $this->clientMapper->findInvalidateOnLogout();
+
+			foreach ($clientsWithInvalidate as $client) {
+				$this->authorizationCodeMapper->deleteByClientUser($client->getId(), $user->getUID());
+				$this->accessTokenMapper->deleteByClientUser($client->getId(), $user->getUID());
+				$this->refreshTokenMapper->deleteByClientUser($client->getId(), $user->getUID());
+			}
+
+			return null;
+		});
 	}
 }

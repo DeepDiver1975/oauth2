@@ -63,6 +63,7 @@ class ListClients extends Base {
 				'client-secret' => $client->getSecret(),
 				'allow-sub-domains' => $client->getAllowSubdomains(),
 				'trusted' => $client->getTrusted(),
+				'invalidate-on-logout' => $client->getInvalidateOnLogout(),
 			];
 		}
 		parent::writeArrayInOutputFormat($input, $output, $clientsOutput, self::DEFAULT_OUTPUT_PREFIX, true);

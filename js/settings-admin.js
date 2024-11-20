@@ -38,6 +38,7 @@ $(document).ready(function () {
 					$('#oauth2 input[name="name"]').val('');
 					$('#oauth2 input[name="redirect_uri"]').val('');
 					$('#oauth2 input[name="allow_subdomains"]').prop('checked', false);
+					$('#oauth2 input[name="invalidate_on_logout"]').prop('checked', false);
 				}
 			}
 		);

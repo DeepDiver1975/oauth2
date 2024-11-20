@@ -136,6 +136,9 @@ class SettingsController extends Controller {
 		}
 		$client->setTrusted($trusted);
 
+		$invalidateOnLogout = $this->request->getParam('invalidate_on_logout', null) !== null;
+		$client->setInvalidateOnLogout($invalidateOnLogout);
+
 		$this->clientMapper->insert($client);
 		$this->logger->info('The client "' . $client->getName() . '" has been added.', ['app' => $this->appName]);
 

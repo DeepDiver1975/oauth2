@@ -123,4 +123,15 @@ class ClientMapper extends Mapper {
 		$stmt = $this->execute($sql, []);
 		$stmt->closeCursor();
 	}
+
+	/**
+	 * Selects clients whose tokens should be invalidated on logout.
+	 *
+	 * @return Entity[] The client entities.
+	 */
+	public function findInvalidateOnLogout() {
+		$sql = 'SELECT * FROM `' . $this->tableName . '` '
+			. 'WHERE `invalidate_on_logout` = ?';
+		return $this->findEntities($sql, [1], null, null);
+	}
 }

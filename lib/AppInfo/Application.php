@@ -56,7 +56,9 @@ class Application extends App {
 				$c->query('OCA\OAuth2\Db\AuthorizationCodeMapper'),
 				$c->query('OCA\OAuth2\Db\AccessTokenMapper'),
 				$c->query('OCA\OAuth2\Db\RefreshTokenMapper'),
+				$c->query('OCA\OAuth2\Db\ClientMapper'),
 				$c->query('Logger'),
+				\OC::$server->getUserSession(),
 				$c->query('AppName')
 			);
 		});

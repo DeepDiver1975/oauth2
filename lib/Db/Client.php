@@ -33,6 +33,7 @@ use OCP\AppFramework\Db\Entity;
  * @method void setName(string $name)
  * @method boolean getAllowSubdomains()
  * @method boolean getTrusted()
+ * @method boolean getInvalidateOnLogout()
  */
 class Client extends Entity {
 	protected $identifier;
@@ -41,6 +42,7 @@ class Client extends Entity {
 	protected $name;
 	protected $allowSubdomains;
 	protected $trusted;
+	protected $invalidateOnLogout;
 
 	/**
 	 * Client constructor.
@@ -53,6 +55,7 @@ class Client extends Entity {
 		$this->addType('name', 'string');
 		$this->addType('allow_subdomains', 'boolean');
 		$this->addType('trusted', 'boolean');
+		$this->addType('invalidateOnLogout', 'boolean');
 	}
 
 	public function setAllowSubdomains(bool $value): void {
@@ -68,6 +71,14 @@ class Client extends Entity {
 			$this->setter('trusted', [$value ? 1 : 0]);
 		} else {
 			$this->setter('trusted', [$value]);
+		}
+	}
+
+	public function setInvalidateOnLogout(bool $value): void {
+		if (\OC::$server->getDatabaseConnection()->getDatabasePlatform() instanceof OraclePlatform) {
+			$this->setter('invalidateOnLogout', [$value ? 1 : 0]);
+		} else {
+			$this->setter('invalidateOnLogout', [$value]);
 		}
 	}
 }

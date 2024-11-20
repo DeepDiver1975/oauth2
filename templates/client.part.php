@@ -18,6 +18,11 @@
 	<?php else: ?>
 		<td></td>
 	<?php endif; ?>
+	<?php if ($client->getInvalidateOnLogout()): ?>
+		<td class="icon-32 icon-checkmark"></td>
+	<?php else: ?>
+		<td></td>
+	<?php endif; ?>
 	<td>
 		<button type="button" class="button icon-delete" data-id="<?php p($client->getId()) ?>"></button>
 	</td>

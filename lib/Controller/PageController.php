@@ -353,7 +353,7 @@ class PageController extends Controller {
 			);
 		}
 		// logout the current user
-		$this->userSession->logout();
+//		$this->userSession->logout();
 
 		$redirectUrl = $this->urlGenerator->linkToRoute('oauth2.page.authorize', [
 			'response_type' => $response_type,
